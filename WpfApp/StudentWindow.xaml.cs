@@ -1,214 +1,246 @@
-﻿using System;
+﻿using BusinessObjects;
+using Repositories;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using BusinessObjects;
-using Repositories;
-using System.Linq;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 
 namespace WpfApp
 {
-    public partial class StudentWindow : Window
+    /// <summary>
+    /// Interaction logic for Student.xaml
+    /// </summary>
+    public partial class StudentWindow : Window, INotifyPropertyChanged
     {
-        private IStudentRepository studentRepository;
-        private ICourseInformationRepository courseInformationRepository;
-        private IEnrollmentReservationRepository enrollmentReservationRepository;
+        private IStudentRepository _StudentRepository = new StudentRepository();
+        private IEnrollmentReservationRepository _EnrollmentReservationRepository = new EnrollmentReservationRepository();
+        private IEnrollmentDetailRepository _EnrollmentDetailRepository = new EnrollmentDetailRepository();
+        private ICourseInformationRepository _CourseInformationRepository = new CourseInfomationRepository();
+        
+        private List<CourseInformation> _CourseLists;
+        public List<CourseInformation> CourseLists
+        {
+            get { return _CourseLists; }
+            set
+            {
+                _CourseLists = value;
+                OnPropertyChanged(nameof(CourseLists));
+            }
+        }
 
-        private Student currentStudent;
-        private bool isNewStudent = false;
+        private CourseInformation _selectedCourse;
+        public CourseInformation SelectedCourse
+        {
+            get { return _selectedCourse; }
+            set
+            {
+                if (_selectedCourse != value)
+                {
+                    _selectedCourse = value;
+                    OnPropertyChanged(nameof(SelectedCourse));
 
-        public StudentWindow(IStudentRepository stuRepo, ICourseInformationRepository courseInfoRepo,
-                             IEnrollmentReservationRepository enrollRepo)
+                    if (_selectedCourse != null)
+                    {
+                        CoursePricePerDate = _selectedCourse.CoursePricePerDate;
+                    }
+                }
+            }
+        }
+
+
+        private decimal _CoursePricePerDate;
+        public decimal CoursePricePerDate
+        {
+            get { return _CoursePricePerDate; }
+            set
+            {
+                if (_CoursePricePerDate != value)
+                {
+                    _CoursePricePerDate = value;
+                    OnPropertyChanged(nameof(CoursePricePerDate));
+                    CalculateActualPrice(); // Recalculate ActualPrice when CoursePricePerDate changes
+
+                    if (SelectedCourse != null)
+                    {
+                        SelectedCourse.CoursePricePerDate = _CoursePricePerDate;
+                        OnPropertyChanged(nameof(SelectedCourse)); // Notify SelectedCourse change
+                    }
+                }
+            }
+        }
+
+        private Student _Student;
+        public Student Student
+        {
+            get { return _Student; }
+            set
+            {
+                _Student = value;
+                OnPropertyChanged(nameof(Student));
+            }
+        }
+
+        private DateTime _startTime = DateTime.Now;
+        public DateTime StartTime
+        {
+            get { return _startTime; }
+            set
+            {
+                _startTime = value;
+                OnPropertyChanged(nameof(StartTime));
+                CalculateActualPrice(); // Recalculate ActualPrice when StartTime changes
+            }
+        }
+
+        private DateTime _endTime = DateTime.Now;
+        public DateTime EndTime
+        {
+            get { return _endTime; }
+            set
+            {
+                _endTime = value;
+                OnPropertyChanged(nameof(EndTime));
+                CalculateActualPrice(); // Recalculate ActualPrice when EndTime changes
+            }
+        }
+        private decimal _actualPrice = 0;
+        public decimal ActualPrice
+        {
+            get => _actualPrice;
+            set
+            {
+                _actualPrice = value;
+                OnPropertyChanged(nameof(ActualPrice));
+                CalculateTotalPrice();
+            }
+        }
+
+        private decimal _totalPrice = 0;
+        public decimal TotalPrice
+        {
+            get => _totalPrice;
+            set
+            {
+                _totalPrice = value;
+                OnPropertyChanged(nameof(TotalPrice));
+            }
+        }
+        private void CalculateActualPrice()
+        {
+            int days = (EndTime.Date - StartTime.Date).Days + 1;
+            ActualPrice = CoursePricePerDate * days;
+        }
+
+        private void CalculateTotalPrice()
+        {
+            decimal taxRate = 0.08m; 
+            TotalPrice = ActualPrice * (1 + taxRate);
+        }
+
+        public StudentWindow()
         {
             InitializeComponent();
-            studentRepository = stuRepo;
-            courseInformationRepository = courseInfoRepo;
-            enrollmentReservationRepository = enrollRepo;
+            DataContext = this;
 
-            LoadStudents();
-            SetupStatusComboBox();
+            BindStudent();
+            CourseLists = _CourseInformationRepository.GetCourseInformations();
+
+            cbCourse.ItemsSource = CourseLists;
+            cbCourse.DisplayMemberPath = "CourseNumber";
+            BindEnrollmentDetails();
         }
 
-        private void SetupStatusComboBox()
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string propertyName)
         {
-            cboStatus.ItemsSource = Enum.GetValues(typeof(StudentStatus));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private void LoadStudents()
+        private void BindStudent()
         {
-            dgStudents.ItemsSource = studentRepository.GetAll();
+            Student = _StudentRepository.GetCurrentStudent();
         }
 
-        private void btnAdd_Click(object sender, RoutedEventArgs e)
+        private void BindEnrollmentDetails()
         {
-            ClearFields();
-            isNewStudent = true;
-            EnableFields(true);
+            dtEnrollmentDetails.ItemsSource = _EnrollmentDetailRepository.GetEnrollmentDetails(Student.StudentID);
+            dtEnrollmentDetails.Items.Refresh();
+
         }
 
-        private void btnEdit_Click(object sender, RoutedEventArgs e)
+
+        private void cbCourse_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (dgStudents.SelectedItem != null)
+            SelectedCourse = cbCourse.SelectedItem as CourseInformation;
+        }
+
+        private void  ButtonBook_Click(object sender, RoutedEventArgs e)
+        {
+            EnrollmentReservation EnrollmentReservation = new EnrollmentReservation()
             {
-                currentStudent = (Student)dgStudents.SelectedItem;
-                DisplayStudentDetails(currentStudent);
-                isNewStudent = false;
-                EnableFields(true);
-            }
-            else
+                EnrollmentDate = DateTime.Now,
+                TotalPrice = Decimal.Parse(txtTotalPrice.Text),
+                EnrollmentReservationID = 0,
+                EnrollmentStatus = EnrollmentStatus.Pending,
+                StudentID = Student.StudentID,
+                Student = Student,
+            };
+            var newEnrollmentReservation = _EnrollmentReservationRepository.AddReservation(EnrollmentReservation);
+            var list = _EnrollmentReservationRepository.GetAllReservations();
+            EnrollmentDetail EnrollmentDetail = new EnrollmentDetail()
             {
-                MessageBox.Show("Vui lòng chọn một học viên để chỉnh sửa.");
-            }
+                ActualPrice = Decimal.Parse(txtActualPrice.Text),
+                EnrollmentReservation = newEnrollmentReservation,
+                EnrollmentReservationID = newEnrollmentReservation.EnrollmentReservationID,
+                EndDate = DateTime.Parse(txtEndDate.Text),
+                CourseID = SelectedCourse.CourseID,
+                CourseInformation = SelectedCourse,
+                StartDate = DateTime.Parse(txtStartDate.Text),
+            };
+            _EnrollmentDetailRepository.AddEnrollmentDetail(EnrollmentDetail);
+            var list1 = _EnrollmentDetailRepository.GetAllEnrollmentDetails();
+
+            MessageBox.Show("Book Course successfully, waiting for admin to confirm your Enrollment");
+            BindEnrollmentDetails();
         }
 
-        private void btnDelete_Click(object sender, RoutedEventArgs e)
+      
+
+        private void ButtonLogOut_Click(object sender, RoutedEventArgs e)
         {
-            if (dgStudents.SelectedItem != null)
-            {
-                Student studentToDelete = (Student)dgStudents.SelectedItem;
-                if (MessageBox.Show("Bạn có chắc chắn muốn xóa học viên này?", "Xác nhận xóa", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-                {
-                    studentRepository.Delete(studentToDelete.StudentID);
-                    LoadStudents();
-                    ClearFields();
-                }
-            }
-            else
-            {
-                MessageBox.Show("Vui lòng chọn một học viên để xóa.");
-            }
+            this.Close();
+            MainWindow mainWindow = new MainWindow();
+            mainWindow.Show();
         }
 
-        private void btnSave_Click(object sender, RoutedEventArgs e)
+        private void ButtonUpdate_Click(object sender, RoutedEventArgs e)
         {
-            if (ValidateInput())
+            Button button = sender as Button;
+
+            UpdateProfile updateWindow = new UpdateProfile();
+            updateWindow.Owner = Window.GetWindow(this);
+            updateWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+
+            updateWindow.Closed += (s, args) =>
             {
-                if (isNewStudent)
-                {
-                    currentStudent = new Student();
-                }
+                BindStudent();
 
-                currentStudent.StudentFullName = txtFullName.Text;
-                currentStudent.Telephone = txtTelephone.Text;
-                currentStudent.EmailAddress = txtEmail.Text;
-                currentStudent.StudentBirthday = dpBirthday.SelectedDate ?? DateTime.Now;
-                currentStudent.StudentStatus = (StudentStatus)cboStatus.SelectedItem;
+            };
 
-                if (isNewStudent)
-                {
-                    studentRepository.Add(currentStudent);
-                }
-                else
-                {
-                    studentRepository.Update(currentStudent);
-                }
-
-                LoadStudents();
-                ClearFields();
-                EnableFields(false);
-            }
-        }
-
-        private void btnCancel_Click(object sender, RoutedEventArgs e)
-        {
-            ClearFields();
-            EnableFields(false);
-        }
-
-        private void DisplayStudentDetails(Student student)
-        {
-            txtStudentID.Text = student.StudentID.ToString();
-            txtFullName.Text = student.StudentFullName;
-            txtTelephone.Text = student.Telephone;
-            txtEmail.Text = student.EmailAddress;
-            dpBirthday.SelectedDate = student.StudentBirthday;
-            cboStatus.SelectedItem = student.StudentStatus;
-
-            LoadStudentCourses(student.StudentID);
-        }
-
-        private void LoadStudentCourses(int studentId)
-        {
-            var enrollments = enrollmentReservationRepository.GetAll()
-                .Where(e => e.StudentID == studentId)
-                .ToList();
-
-            var courseIds = enrollments.Select(e => e.CourseID).Distinct().ToList();
-            var courses = courseInformationRepository.GetAll()
-                .Where(c => courseIds.Contains(c.CourseID))
-                .ToList();
-
-            dgCourses.ItemsSource = courses;
-        }
-
-        private void ClearFields()
-        {
-            txtStudentID.Clear();
-            txtFullName.Clear();
-            txtTelephone.Clear();
-            txtEmail.Clear();
-            dpBirthday.SelectedDate = null;
-            cboStatus.SelectedIndex = -1;
-
-            dgCourses.ItemsSource = null;
-        }
-
-        private void EnableFields(bool enable)
-        {
-            txtFullName.IsEnabled = enable;
-            txtTelephone.IsEnabled = enable;
-            txtEmail.IsEnabled = enable;
-            dpBirthday.IsEnabled = enable;
-            cboStatus.IsEnabled = enable;
-
-            btnSave.IsEnabled = enable;
-            btnCancel.IsEnabled = enable;
-            btnAdd.IsEnabled = !enable;
-            btnEdit.IsEnabled = !enable;
-            btnDelete.IsEnabled = !enable;
-        }
-
-        private bool ValidateInput()
-        {
-            if (string.IsNullOrWhiteSpace(txtFullName.Text))
-            {
-                MessageBox.Show("Vui lòng nhập họ tên đầy đủ của học viên.");
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(txtTelephone.Text))
-            {
-                MessageBox.Show("Vui lòng nhập số điện thoại của học viên.");
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(txtEmail.Text))
-            {
-                MessageBox.Show("Vui lòng nhập địa chỉ email của học viên.");
-                return false;
-            }
-
-            if (!dpBirthday.SelectedDate.HasValue)
-            {
-                MessageBox.Show("Vui lòng chọn ngày sinh của học viên.");
-                return false;
-            }
-
-            if (cboStatus.SelectedItem == null)
-            {
-                MessageBox.Show("Vui lòng chọn trạng thái của học viên.");
-                return false;
-            }
-
-            return true;
-        }
-
-        private void dgStudents_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (dgStudents.SelectedItem != null)
-            {
-                currentStudent = (Student)dgStudents.SelectedItem;
-                DisplayStudentDetails(currentStudent);
-            }
+            updateWindow.ShowDialog();
         }
     }
 }
+

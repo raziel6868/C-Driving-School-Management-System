@@ -1,20 +1,19 @@
-﻿using System;
+﻿using BusinessObjects;
+using System;
 using System.Collections.Generic;
-using BusinessObjects;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Repositories
 {
     public interface IEnrollmentReservationRepository
     {
-        List<EnrollmentReservation> GetAll();
-        EnrollmentReservation GetByID(int enrollmentID);
-        void Add(EnrollmentReservation enrollment);
-        void Update(EnrollmentReservation enrollment);
-        void Delete(int enrollmentID);
-        List<EnrollmentReservation> GetEnrollmentsByStudentID(int studentID);
-        List<EnrollmentReservation> GetEnrollmentsByCourseID(int courseID);
-        List<EnrollmentReservation> GetEnrollmentsByDateRange(DateTime startDate, DateTime endDate);
-        bool IsStudentEnrolledInCourse(int studentID, int courseID);
-        int GetEnrollmentCountForCourse(int courseID);
+        List<EnrollmentReservation> GetAllReservations();
+        EnrollmentReservation AddReservation(EnrollmentReservation reservation);
+        void UpdateReservation(EnrollmentReservation updatedReservation);
+        void DeleteReservation(int reservationId);
+        EnrollmentReservation GetEnrollmentReservation(int reservationId);
+
     }
 }

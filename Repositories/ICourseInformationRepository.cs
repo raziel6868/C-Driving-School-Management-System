@@ -1,20 +1,20 @@
-﻿using System.Collections.Generic;
-using BusinessObjects;
+﻿using BusinessObjects;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Repositories
 {
     public interface ICourseInformationRepository
     {
-        List<CourseInformation> GetAll();
-        CourseInformation GetByID(int courseID);
-        void Add(CourseInformation course);
-        void Update(CourseInformation course);
-        void Delete(int courseID);
-        List<CourseInformation> GetCoursesByType(int courseTypeID);
-        List<CourseInformation> GetActiveCoursesWithAvailableSlots();
-        int GetEnrolledStudentCount(int courseID);
-        List<CourseInformation> SearchCourses(string searchTerm);
+        List<CourseInformation> GetCourseInformations();
+        void SaveCourseInformation(CourseInformation r);
+        void DeleteCourseInformation(CourseInformation r);
+        void UpdateCourseInformation(CourseInformation r);
+        CourseInformation GetCourseInformationById(int CourseId);
+
         int GetNewId();
-        void SaveCourseInformation(CourseInformation courseInfo);
     }
 }

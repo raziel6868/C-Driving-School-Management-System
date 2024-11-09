@@ -115,43 +115,81 @@ namespace DataAccessLayer
                 }
             };
 
-        public void Add(Student student)
+        public Student GetCurrentStudent()
         {
-            student.StudentID = GetNewId();
-            list.Add(student);
+            return CurrentStudent;
         }
-
-        public void Update(Student student)
+        public List<Student> GetStudents()
         {
-            var index = list.FindIndex(s => s.StudentID == student.StudentID);
-            if (index != -1)
-            {
-                list[index] = student;
-            }
-        }
-
-        public void Delete(int studentID)
-        {
-            var student = GetByID(studentID);
-            if (student != null)
-            {
-                list.Remove(student);
-            }
-        }
-
-        public Student GetByID(int studentID)
-        {
-            return list.FirstOrDefault(s => s.StudentID == studentID);
-        }
-
-        private int GetNewId()
-        {
-            return list.Count == 0 ? 1 : list.Max(s => s.StudentID) + 1;
-        }
-        public List<Student> GetAll()
-        {
+            
             return list;
         }
 
+        public void AddStudent (Student Student)
+        {
+            list.Add(Student);
+        }
+
+        public void UpdateCurrentStudent(Student Student)
+        {
+            CurrentStudent = Student;
+        }
+        public void UpdateStudent (Student Student)
+        {
+            foreach (var current in list.ToList()) {
+                if (current.StudentID == Student.StudentID)
+                {
+                    current.StudentFullName = Student.StudentFullName;
+                    current.Telephone = Student.Telephone;
+                    current.EmailAddress = Student.EmailAddress;
+                    current.StudentBirthday = Student.StudentBirthday;
+                    current.StudentStatus = Student.StudentStatus;
+                    current.Password = Student.Password;
+                }
+            }
+        }
+
+        public void DeleteStudent(Student Student)
+        {
+            foreach (var current in list.ToList())
+            {
+                if (current.StudentID == Student.StudentID)
+                {
+                    list.Remove(current);
+                }
+            }
+        }
+
+        public Student GetStudentById (int id)
+        {
+            foreach (var current in list)
+            {
+                if (current.StudentID == id)
+                {
+                    return current;
+                }
+               
+            }
+            return null;
+        }
+
+        public Student GetStudentByEmail (string email)
+        {
+            foreach (var current in list)
+            {
+                if (current.EmailAddress.Equals(email))
+                {
+                    CurrentStudent = current;
+                    return current;
+                }
+            }
+            return null;
+        }
+
+        public int GetNewId ()
+        {
+            return list.Max(x => x.StudentID) + 1;
+        }
+        
     }
 }

@@ -1,19 +1,25 @@
-﻿using System.Collections.Generic;
-using BusinessObjects;
+﻿using BusinessObjects;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Repositories
 {
     public interface IStudentRepository
     {
+        List<Student> GetStudents();
+        void SaveStudent(Student Student);
+        void DeleteStudent (Student Student);
+        void UpdateStudent (Student Student);
+        Student GetStudentById (int id);
         Student GetStudentByEmail(string email);
-        List<Student> GetAll();
-        Student GetByID(int studentID);
-        void Add(Student student);
-        void Update(Student student);
-        void Delete(int studentID);
-        List<Student> GetStudentsByStatus(StudentStatus status);
-        List<Student> SearchStudents(string searchTerm);
-        bool IsEmailUnique(string email);
-        bool IsTelephoneUnique(string telephone);
+
+        int GetNewId();
+
+        Student GetCurrentStudent();
+
+        void UpdateCurrentStudent(Student Student);
     }
 }

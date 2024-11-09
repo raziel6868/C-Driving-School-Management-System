@@ -1,104 +1,362 @@
 ﻿<Window x:Class="WpfApp.StudentWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Quản lý Học viên" Height="650" Width="800">
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp"
+        mc:Ignorable="d"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="Student Window"
+        Height="450"
+        Width="800"
+        ResizeMode="NoResize">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        <!--<TextBlock Text="{Binding StudentFullName}"></TextBlock>-->
+        <materialDesign:Card>
+            <TabControl materialDesign:NavigationRailAssist.ShowSelectionBackground="True"
+                        SnapsToDevicePixels="True"
+                        Style="{StaticResource MaterialDesignNavigationRailTabControl}"
+                        TabStripPlacement="Left">
 
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10">
-            <Button x:Name="btnAdd" Content="Thêm" Width="100" Margin="0,0,10,0" Click="btnAdd_Click"/>
-            <Button x:Name="btnEdit" Content="Sửa" Width="100" Margin="0,0,10,0" Click="btnEdit_Click"/>
-            <Button x:Name="btnDelete" Content="Xóa" Width="100" Margin="0,0,10,0" Click="btnDelete_Click"/>
-            <Button x:Name="btnSave" Content="Lưu" Width="100" Margin="0,0,10,0" Click="btnSave_Click"/>
-            <Button x:Name="btnCancel" Content="Hủy" Width="100" Click="btnCancel_Click"/>
-        </StackPanel>
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel Width="auto"
+                                    Height="auto">
 
-        <TabControl Grid.Row="1" Margin="10">
-            <TabItem Header="Thông tin Học viên">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+                            <materialDesign:PackIcon Width="24"
+                                                     Height="24"
+                                                     HorizontalAlignment="Center"
+                                                     Kind="Account" />
+                            <TextBlock HorizontalAlignment="Center"
+                                       Text="Account" />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <StackPanel Margin="16">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Margin="0,0,0,8"
+                                       Style="{StaticResource MaterialDesignHeadline5TextBlock}"><Run Text="My Account" /><LineBreak /><Run /></TextBlock>
+                            <Grid Grid.Column="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="3*"></ColumnDefinition>
+                                    <ColumnDefinition></ColumnDefinition>
 
-                    <Label Grid.Row="0" Grid.Column="0" Content="Mã học viên:"/>
-                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="txtStudentID" Margin="0,0,0,5"/>
+                                </Grid.ColumnDefinitions>
 
-                    <Label Grid.Row="1" Grid.Column="0" Content="Họ và tên:"/>
-                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="txtFullName" Margin="0,0,0,5"/>
+                                <Button 
+                                Grid.Column="0"
+                                VerticalAlignment="Top"
+                                HorizontalAlignment="Right"
+                                Width="80"
+                                    Content="Update"
+                                    IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
+                                    Style="{StaticResource MaterialDesignPaperButton}"
+                                    ToolTip="Resource name: MaterialDesignPaperButton"
+                                    Click="ButtonUpdate_Click" />
+                            <Button Grid.Column="1"
+                                    VerticalAlignment="Top"
+                                    HorizontalAlignment="Right"
+                                    Width="80"
+                                    Content="Log out"
+                                    IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
+                                    Style="{StaticResource MaterialDesignPaperButton}"
+                                    ToolTip="Resource name: MaterialDesignPaperButton"
+                                    Click="ButtonLogOut_Click" />
+                            </Grid>
+                        </Grid>
+                        <materialDesign:Card Width="600"
+                                             Padding="8"
+                                             Background="White"
+                                             Foreground="Indigo">
 
-                    <Label Grid.Row="2" Grid.Column="0" Content="Số điện thoại:"/>
-                    <TextBox Grid.Row="2" Grid.Column="1" x:Name="txtTelephone" Margin="0,0,0,5"/>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition></ColumnDefinition>
+                                    <ColumnDefinition></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
 
-                    <Label Grid.Row="3" Grid.Column="0" Content="Email:"/>
-                    <TextBox Grid.Row="3" Grid.Column="1" x:Name="txtEmail" Margin="0,0,0,5"/>
+                                <!-- Full Name -->
+                                <Grid Grid.Row="0"
+                                      Grid.Column="0"
+                                      Margin="10">
+                                    <TextBlock FontSize="15">Full Name:</TextBlock>
+                                </Grid>
+                                <Grid Grid.Row="0"
+                                      Grid.Column="1"
+                                      Margin="10">
+                                    <TextBlock Text="{Binding Student.StudentFullName}" />
+                                </Grid>
 
-                    <Label Grid.Row="4" Grid.Column="0" Content="Ngày sinh:"/>
-                    <DatePicker Grid.Row="4" Grid.Column="1" x:Name="dpBirthday" Margin="0,0,0,5"/>
+                                <!-- Student ID -->
+                                <Grid Grid.Row="1"
+                                      Grid.Column="0"
+                                      Margin="10">
+                                    <TextBlock FontSize="15">Student ID:</TextBlock>
+                                </Grid>
+                                <Grid Grid.Row="1"
+                                      Grid.Column="1"
+                                      Margin="10">
+                                    <TextBlock Text="{Binding Student.StudentID}" />
+                                </Grid>
 
-                    <Label Grid.Row="5" Grid.Column="0" Content="Trạng thái:"/>
-                    <ComboBox Grid.Row="5" Grid.Column="1" x:Name="cboStatus" Margin="0,0,0,5"/>
+                                <!-- Telephone -->
+                                <Grid Grid.Row="2"
+                                      Grid.Column="0"
+                                      Margin="10">
+                                    <TextBlock FontSize="15">Telephone:</TextBlock>
+                                </Grid>
+                                <Grid Grid.Row="2"
+                                      Grid.Column="1"
+                                      Margin="10">
+                                    <TextBlock Text="{Binding Student.Telephone}" />
+                                </Grid>
 
-                    <DataGrid Grid.Row="6" Grid.ColumnSpan="2" x:Name="dgStudents" AutoGenerateColumns="False" Margin="0,10,0,0">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Mã học viên" Binding="{Binding StudentID}"/>
-                            <DataGridTextColumn Header="Họ và tên" Binding="{Binding StudentFullName}"/>
-                            <DataGridTextColumn Header="Số điện thoại" Binding="{Binding Telephone}"/>
-                            <DataGridTextColumn Header="Email" Binding="{Binding EmailAddress}"/>
-                            <DataGridTextColumn Header="Ngày sinh" Binding="{Binding StudentBirthday, StringFormat=d}"/>
-                            <DataGridTextColumn Header="Trạng thái" Binding="{Binding StudentStatus}"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
-            </TabItem>
+                                <!-- Email Address -->
+                                <Grid Grid.Row="3"
+                                      Grid.Column="0"
+                                      Margin="10">
+                                    <TextBlock FontSize="15">Email Address:</TextBlock>
+                                </Grid>
+                                <Grid Grid.Row="3"
+                                      Grid.Column="1"
+                                      Margin="10">
+                                    <TextBlock Text="{Binding Student.EmailAddress}" />
+                                </Grid>
 
-            <TabItem Header="Khóa học">
-                <DataGrid x:Name="dgCourses" AutoGenerateColumns="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Mã khóa học" Binding="{Binding CourseID}"/>
-                        <DataGridTextColumn Header="Tên khóa học" Binding="{Binding CourseName}"/>
-                        <DataGridTextColumn Header="Loại khóa học" Binding="{Binding CourseType}"/>
-                        <DataGridTextColumn Header="Ngày bắt đầu" Binding="{Binding StartDate, StringFormat=d}"/>
-                        <DataGridTextColumn Header="Ngày kết thúc" Binding="{Binding EndDate, StringFormat=d}"/>
-                        <DataGridTextColumn Header="Trạng thái" Binding="{Binding CourseStatus}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
+                                <!-- Birthday -->
+                                <Grid Grid.Row="4"
+                                      Grid.Column="0"
+                                      Margin="10">
+                                    <TextBlock FontSize="15">Birthday:</TextBlock>
+                                </Grid>
+                                <Grid Grid.Row="4"
+                                      Grid.Column="1"
+                                      Margin="10">
+                                    <TextBlock Text="{Binding Student.StudentBirthday, StringFormat='{}{0:dd/MM/yyyy}'}" />
+                                </Grid>
 
-            <TabItem Header="Lịch thi">
-                <DataGrid x:Name="dgExamSchedules" AutoGenerateColumns="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Mã lịch thi" Binding="{Binding ExamID}"/>
-                        <DataGridTextColumn Header="Ngày thi" Binding="{Binding ExamDate, StringFormat=d}"/>
-                        <DataGridTextColumn Header="Loại thi" Binding="{Binding ExamType}"/>
-                        <DataGridTextColumn Header="Trạng thái" Binding="{Binding ExamStatus}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
+                                <!-- Student Status -->
+                                <Grid Grid.Row="5"
+                                      Grid.Column="0"
+                                      Margin="10">
+                                    <TextBlock FontSize="15">Student Status:</TextBlock>
+                                </Grid>
+                                <Grid Grid.Row="5"
+                                      Grid.Column="1"
+                                      Margin="10">
+                                    <TextBlock Text="{Binding Student.StudentStatus}"
+                                               Height="40"
+                                               VerticalAlignment="Bottom" />
+                                </Grid>
 
-            <TabItem Header="Bằng lái">
-                <DataGrid x:Name="dgLicenses" AutoGenerateColumns="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Mã bằng lái" Binding="{Binding LicenseID}"/>
-                        <DataGridTextColumn Header="Loại bằng" Binding="{Binding LicenseType}"/>
-                        <DataGridTextColumn Header="Ngày cấp" Binding="{Binding IssueDate, StringFormat=d}"/>
-                        <DataGridTextColumn Header="Ngày hết hạn" Binding="{Binding ExpiryDate, StringFormat=d}"/>
-                        <DataGridTextColumn Header="Trạng thái" Binding="{Binding Status}"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
-        </TabControl>
+                                <!-- Password -->
+                                <Grid Grid.Row="6"
+                                      Grid.Column="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="9*" />
+                                        <ColumnDefinition Width="25*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock FontSize="15"
+                                               Grid.ColumnSpan="2"
+                                               Margin="10">Password:</TextBlock>
+                                </Grid>
+                                <Grid Grid.Row="6"
+                                      Grid.Column="1"
+                                      Margin="10">
+                                    <TextBlock Text="{Binding Student.Password}" />
+                                </Grid>
+
+                            </Grid>
+                        </materialDesign:Card>
+                    </StackPanel>
+                </TabItem>
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel Width="auto"
+                                    Height="auto">
+                            <materialDesign:PackIcon Width="24"
+                                                     Height="24"
+                                                     HorizontalAlignment="Center"
+                                                     Kind="Bed" />
+                            <TextBlock HorizontalAlignment="Center"
+                                       Text="Enrollment" />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <StackPanel Margin="16">
+                        <TextBlock Margin="0,0,0,8"
+                                   Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                   Text="Enrollment" />
+                        <materialDesign:Card Width="700"
+                                             Padding="8"
+                                             Background="{DynamicResource PrimaryHueDarkBrush}"
+                                             Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
+                                             UniformCornerRadius="6">
+
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition></ColumnDefinition>
+                                    <ColumnDefinition></ColumnDefinition>
+
+                                </Grid.ColumnDefinitions>
+
+
+                                <ComboBox Grid.Row="0"
+                                          Grid.Column="0"
+                                          Margin="10"
+                                          MinWidth="72"
+                                          materialDesign:HintAssist.Hint="Course Number"
+                                          materialDesign:HintAssist.HelperText="Course available"
+                                          Name="cbCourse"
+                                          SelectedValue="{Binding SelectedValueOne}"
+                                          DisplayMemberPath="{Binding CourseNumber}"
+                                          SelectionChanged="cbCourse_SelectionChanged">
+                                    <ComboBox.SelectedItem>
+                                        <Binding Mode="TwoWay"
+                                                 Path="SelectedValueOne"
+                                                 UpdateSourceTrigger="PropertyChanged">
+
+                                        </Binding>
+                                    </ComboBox.SelectedItem>
+                                </ComboBox>
+
+                                <DatePicker Grid.Column="0"
+                                            Margin="10"
+                                            Grid.Row="1"
+                                            Name="txtStartDate"
+                                            SelectedDate="{Binding StartTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            materialDesign:HintAssist.Hint="Start Date"
+                                            materialDesign:TextFieldAssist.HasClearButton="True"
+                                            materialDesign:HintAssist.HelperText="Start date"
+                                            Style="{StaticResource MaterialDesignFloatingHintDatePicker}" />
+
+                                <DatePicker Grid.Column="1"
+                                            Name="txtEndDate"
+                                            Margin="10"
+                                            Grid.Row="1"
+                                            SelectedDate="{Binding EndTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            materialDesign:HintAssist.Hint="End Date"
+                                            materialDesign:HintAssist.HelperText="End date"
+                                            materialDesign:TextFieldAssist.HasClearButton="True" />
+                                <TextBox 
+                                    Grid.Row="2"
+                                    IsReadOnly="True"
+                                    Name="txtPrice"
+                                    Margin="10"
+                                         materialDesign:HintAssist.HelperText="Price per date"
+                                         materialDesign:HintAssist.Hint="Price per date"
+                                    Text="{Binding CoursePricePerDate}"
+                                       >
+                                   
+                                </TextBox>
+                                <TextBox Grid.Row="2" Grid.Column="1"
+                                         IsReadOnly="True"
+                                         Name="txtActualPrice"
+                                         Margin="10"
+                                         materialDesign:HintAssist.HelperText="Price actual"
+                                         materialDesign:HintAssist.Hint="Price actual"
+                                         Text="{Binding ActualPrice}">
+
+                                </TextBox>
+                                <TextBox Grid.Row="3"
+                                         Grid.Column="0"
+                                         IsReadOnly="True"
+                                         Name="txtTotalPrice"
+                                         Margin="10"
+                                         materialDesign:HintAssist.HelperText="Total price include 8% tax"
+                                         materialDesign:HintAssist.Hint="Total price"
+                                         Text="{Binding TotalPrice}">
+
+                                </TextBox>
+                                <Button 
+                                    HorizontalAlignment="Left"
+                                    Grid.Row="4"
+                                        Grid.Column="0"
+                                        Margin="20"
+                                        Width="80"
+                                        Content="Book"
+                                        IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
+                                        Style="{StaticResource MaterialDesignPaperButton}"
+                                        ToolTip="Book Course today to have discount 0%"
+                                        Click="ButtonBook_Click" />
+                                
+                            </Grid>
+                        </materialDesign:Card>
+                    </StackPanel>
+                </TabItem>
+                <TabItem>
+                    <TabItem.Header>
+                        <StackPanel Width="auto"
+                                    Height="auto">
+                            <materialDesign:PackIcon Width="24"
+                                                     Height="24"
+                                                     HorizontalAlignment="Center"
+                                                     Kind="History" />
+                            <TextBlock HorizontalAlignment="Center"
+                                       Text="History" />
+                        </StackPanel>
+                    </TabItem.Header>
+                    <StackPanel Margin="16">
+                        <TextBlock Margin="0,0,0,8"
+                                   Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                   Text="Enrollment history" />
+                        <materialDesign:Card Width="700"
+                                             Padding="8"
+                                             Background="{DynamicResource PrimaryHueDarkBrush}"
+                                             Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
+                                             UniformCornerRadius="6">
+
+                        </materialDesign:Card>
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto">
+                            <DataGrid CanUserAddRows="True"
+                                      CanUserDeleteRows="True"
+                                      x:Name="dtEnrollmentDetails"
+                                      SelectionMode="Extended"
+                                      SelectionUnit="FullRow"
+                                      AutoGenerateColumns="False"
+                                      IsReadOnly="True">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="ID"
+                                                        Binding="{Binding EnrollmentReservationID}" />
+                                    <DataGridTextColumn Header="Course Number"
+                                                        Binding="{Binding CourseInformation.CourseNumber}" />
+                                    <DataGridTextColumn Header="Enrollment Date"
+                                                        Binding="{Binding EnrollmentReservation.EnrollmentDate}" />
+                                    <DataGridTextColumn Header="Start Date"
+                                                        Binding="{Binding StartDate}" />
+                                    <DataGridTextColumn Header="End Date"
+                                                        Binding="{Binding EndDate}" />
+                                    <DataGridTextColumn Header="Total Price"
+                                                        Binding="{Binding EnrollmentReservation.TotalPrice}" />
+                                    <DataGridTextColumn Header="Enrollment Status"
+                                                        Binding="{Binding EnrollmentReservation.EnrollmentStatus}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </ScrollViewer>
+                    </StackPanel>
+                </TabItem>
+
+
+            </TabControl>
+        </materialDesign:Card>
     </Grid>
 </Window>

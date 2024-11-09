@@ -1,39 +1,58 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using BusinessObjects;
+﻿using BusinessObjects;
 using DataAccessLayer;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Repositories
 {
     public class StudentRepository : IStudentRepository
     {
-        private StudentDAO studentDAO = StudentDAO.Instance;
-
-        public List<Student> GetAll() => studentDAO.GetAll();
-
-        public Student GetByID(int studentID) => studentDAO.GetByID(studentID);
-
-        public void Add(Student student) => studentDAO.Add(student);
-
-        public void Update(Student student) => studentDAO.Update(student);
-
-        public void Delete(int studentID) => studentDAO.Delete(studentID);
-
-        public List<Student> GetStudentsByStatus(StudentStatus status)
-            => studentDAO.GetAll().Where(s => s.StudentStatus == status).ToList();
-
-        public List<Student> SearchStudents(string searchTerm)
-            => studentDAO.GetAll().Where(s => s.StudentFullName.Contains(searchTerm) || s.Telephone.Contains(searchTerm)).ToList();
-
-        public bool IsEmailUnique(string email)
-            => !studentDAO.GetAll().Any(s => s.EmailAddress == email);
-
-        public bool IsTelephoneUnique(string telephone)
-            => !studentDAO.GetAll().Any(s => s.Telephone == telephone);
-
-        public Student GetStudentByEmail(string email)
+        public void DeleteStudent(Student Student)
         {
-            return studentDAO.GetAll().FirstOrDefault(s => s.EmailAddress == email);
+            StudentDAO.Instance.DeleteStudent(Student);
+        }
+
+        public Student GetStudentById(int id)
+        {
+            return StudentDAO.Instance.GetStudentById(id);
+        }
+
+        public List<Student> GetStudents()
+        {
+            return StudentDAO.Instance.GetStudents();
+        }
+
+        public void SaveStudent(Student Student)
+        {
+            StudentDAO.Instance.AddStudent(Student);
+        }
+
+        public void UpdateStudent(Student Student)
+        {
+            StudentDAO.Instance.UpdateStudent(Student);
+        }
+
+        public Student GetStudentByEmail (string email)
+        {
+            return StudentDAO.Instance.GetStudentByEmail(email);
+        }
+
+        public int GetNewId()
+        {
+            return StudentDAO.Instance.GetNewId();
+        }
+
+        public Student GetCurrentStudent()
+        {
+            return StudentDAO.Instance.GetCurrentStudent();
+        }
+
+        public void UpdateCurrentStudent(Student Student)
+        {
+            StudentDAO.Instance.UpdateStudent(Student);
         }
     }
 }

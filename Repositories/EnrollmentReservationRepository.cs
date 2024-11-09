@@ -1,38 +1,38 @@
-﻿using System;
+﻿using BusinessObjects;
+using DataAccessLayer;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using BusinessObjects;
-using DataAccessLayer;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Repositories
 {
     public class EnrollmentReservationRepository : IEnrollmentReservationRepository
     {
-        private EnrollmentReservationDAO enrollmentReservationDAO = EnrollmentReservationDAO.Instance;
+        public EnrollmentReservation AddReservation(EnrollmentReservation reservation)
+        {
+            return EnrollmentReservationDAO.Instance.AddReservation(reservation);
+        }
 
-        public List<EnrollmentReservation> GetAll() => enrollmentReservationDAO.GetAll();
+        public void DeleteReservation(int reservationId)
+        {
+            EnrollmentReservationDAO.Instance.DeleteReservation(reservationId);
+        }
 
-        public EnrollmentReservation GetByID(int enrollmentID) => enrollmentReservationDAO.GetByID(enrollmentID);
+        public List<EnrollmentReservation> GetAllReservations()
+        {
+            return EnrollmentReservationDAO.Instance.GetAllReservations();
+        }
 
-        public void Add(EnrollmentReservation enrollment) => enrollmentReservationDAO.Add(enrollment);
+        public EnrollmentReservation GetEnrollmentReservation(int reservationId)
+        {
+           return EnrollmentReservationDAO.Instance.GetEnrollmentReservation(reservationId);
+        }
 
-        public void Update(EnrollmentReservation enrollment) => enrollmentReservationDAO.Update(enrollment);
-
-        public void Delete(int enrollmentID) => enrollmentReservationDAO.Delete(enrollmentID);
-
-        public List<EnrollmentReservation> GetEnrollmentsByStudentID(int studentID)
-            => enrollmentReservationDAO.GetAll().Where(e => e.StudentID == studentID).ToList();
-
-        public List<EnrollmentReservation> GetEnrollmentsByCourseID(int courseID)
-            => enrollmentReservationDAO.GetAll().Where(e => e.CourseID == courseID).ToList();
-
-        public List<EnrollmentReservation> GetEnrollmentsByDateRange(DateTime startDate, DateTime endDate)
-            => enrollmentReservationDAO.GetAll().Where(e => e.EnrollmentDate >= startDate && e.EnrollmentDate <= endDate).ToList();
-
-        public bool IsStudentEnrolledInCourse(int studentID, int courseID)
-            => enrollmentReservationDAO.GetAll().Any(e => e.StudentID == studentID && e.CourseID == courseID);
-
-        public int GetEnrollmentCountForCourse(int courseID)
-            => enrollmentReservationDAO.GetAll().Count(e => e.CourseID == courseID);
+        public void UpdateReservation(EnrollmentReservation updatedReservation)
+        {
+           EnrollmentReservationDAO.Instance.UpdateReservation(updatedReservation);
+        }
     }
 }

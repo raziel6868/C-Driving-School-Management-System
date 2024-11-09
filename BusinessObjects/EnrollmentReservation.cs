@@ -14,7 +14,6 @@ namespace BusinessObjects
         public int StudentID { get; set; }
         public Student Student { get; set; }
         public EnrollmentStatus EnrollmentStatus { get; set; }
-        public int CourseID { get; set; }
 
     }
 }
