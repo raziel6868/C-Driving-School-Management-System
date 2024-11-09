@@ -21,6 +21,16 @@ namespace WpfApp
             this.Close();
         }
 
+        private void btnStudentManagement_Click(object sender, RoutedEventArgs e)
+        {
+            StudentWindow studentWindow = new StudentWindow(
+                new StudentRepository(),
+                new CourseInformationRepository(),
+                new EnrollmentReservationRepository()
+            );
+            studentWindow.Show();
+        }
+
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             string email = txtUserName.Text;

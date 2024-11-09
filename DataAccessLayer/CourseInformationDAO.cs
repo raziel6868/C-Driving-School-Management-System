@@ -115,63 +115,47 @@ namespace DataAccessLayer
                );
         }
 
-        public List<CourseInformation> GetCourseInformations()
+        public List<CourseInformation> GetAll() => list;
+
+        public CourseInformation GetByID(int courseID) => list.FirstOrDefault(c => c.CourseID == courseID);
+
+        public void Add(CourseInformation course)
         {
-
-
-            return list;
+            course.CourseID = GetNewId();
+            list.Add(course);
         }
-        public void SaveCourseInformation(CourseInformation r)
-        {
-            list.Add(r);
-        }
 
-        public void UpdateCourseInformation(CourseInformation r)
+        public void Update(CourseInformation course)
         {
-            foreach (var current in list.ToList())
+            var index = list.FindIndex(c => c.CourseID == course.CourseID);
+            if (index != -1)
             {
-                if (current.CourseID == r.CourseID)
-                {
-                    current.CourseDescription = r.CourseDescription;
-                    current.CoursePricePerDate = r.CoursePricePerDate;
-                    current.CourseTypeID = r.CourseTypeID;
-                    current.CourseNumber = r.CourseNumber;
-                    current.CourseDescription = r.CourseDescription;
-                    current.CourseMaxCapacity = r.CourseMaxCapacity;
-                    current.CourseStatus = r.CourseStatus;
-                }
+                list[index] = course;
             }
         }
 
-        public void DeleteCourseInformation(CourseInformation r)
+        public void Delete(int courseID)
         {
-            foreach (var current in list.ToList())
+            var course = GetByID(courseID);
+            if (course != null)
             {
-                if (current.CourseID == r.CourseID)
-                {
-                    list.Remove(current);
-                }
+                list.Remove(course);
             }
         }
 
-        public CourseInformation GetCourseInformationById(int id)
+        public int GetNewId() => list.Count == 0 ? 1 : list.Max(c => c.CourseID) + 1;
+
+        public void SaveCourseInformation(CourseInformation courseInfo)
         {
-            foreach (var current in list.ToList())
+            if (courseInfo.CourseID == 0)
             {
-                if (current.CourseID == id)
-                {
-                    return current;
-                }
+                Add(courseInfo);
             }
-            return null;
+            else
+            {
+                Update(courseInfo);
+            }
         }
-
-        public int GetNewId()
-        {
-            return list.Max(x => x.CourseID) + 1;
-        }
-
-    
     }
 }
    

@@ -7,51 +7,41 @@ namespace DataAccessLayer
 {
     public class EnrollmentReservationDAO : SingletonBase<EnrollmentReservationDAO>
     {
-        private List<EnrollmentReservation> reservations; 
+        private List<EnrollmentReservation> list;
 
         public EnrollmentReservationDAO()
         {
-            reservations = new List<EnrollmentReservation>() { };
+            list = new List<EnrollmentReservation>();
         }
 
-        public List<EnrollmentReservation> GetAllReservations()
+        public List<EnrollmentReservation> GetAll() => list;
+
+        public EnrollmentReservation GetByID(int enrollmentID) => list.FirstOrDefault(e => e.EnrollmentReservationID == enrollmentID);
+
+        public void Add(EnrollmentReservation enrollment)
         {
-            return reservations;
+            enrollment.EnrollmentReservationID = GetNewId();
+            list.Add(enrollment);
         }
 
-        public EnrollmentReservation AddReservation(EnrollmentReservation reservation)
+        public void Update(EnrollmentReservation enrollment)
         {
-            int newId = reservations.Count > 0 ? reservations.ToList().Max(r => r.EnrollmentReservationID) + 1 : 1;
-            reservation.EnrollmentReservationID = newId;
-            reservations.Add(reservation);
-            return reservation;
-        }
-
-        public void UpdateReservation(EnrollmentReservation updatedReservation)
-        {
-            EnrollmentReservation existingReservation = reservations.ToList().FirstOrDefault(r => r.EnrollmentReservationID == updatedReservation.EnrollmentReservationID);
-            if (existingReservation != null)
+            var index = list.FindIndex(e => e.EnrollmentReservationID == enrollment.EnrollmentReservationID);
+            if (index != -1)
             {
-                existingReservation.EnrollmentDate = updatedReservation.EnrollmentDate;
-                existingReservation.TotalPrice = updatedReservation.TotalPrice;
-                existingReservation.StudentID = updatedReservation.StudentID;
-                existingReservation.Student = updatedReservation.Student;
-                existingReservation.EnrollmentStatus = updatedReservation.EnrollmentStatus;
+                list[index] = enrollment;
             }
         }
 
-        public void DeleteReservation(int reservationId)
+        public void Delete(int enrollmentID)
         {
-            EnrollmentReservation reservationToRemove = reservations.ToList().FirstOrDefault(r => r.EnrollmentReservationID == reservationId);
-            if (reservationToRemove != null)
+            var enrollment = GetByID(enrollmentID);
+            if (enrollment != null)
             {
-                reservations.Remove(reservationToRemove);
+                list.Remove(enrollment);
             }
         }
 
-        public EnrollmentReservation GetEnrollmentReservation (int id)
-        {
-            return reservations.FirstOrDefault(x => x.EnrollmentReservationID == id) ?? null;
-        }
+        private int GetNewId() => list.Count == 0 ? 1 : list.Max(e => e.EnrollmentReservationID) + 1;
     }
 }
