@@ -14,5 +14,7 @@ namespace Repositories
         List<CourseInformation> GetActiveCoursesWithAvailableSlots();
         int GetEnrolledStudentCount(int courseID);
         List<CourseInformation> SearchCourses(string searchTerm);
+        int GetNewId();
+        void SaveCourseInformation(CourseInformation courseInfo);
     }
 }
