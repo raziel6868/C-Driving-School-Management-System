@@ -5,6 +5,7 @@ namespace Repositories
 {
     public interface IStudentRepository
     {
+        Student GetStudentByEmail(string email);
         List<Student> GetAll();
         Student GetByID(int studentID);
         void Add(Student student);

@@ -148,6 +148,10 @@ namespace DataAccessLayer
         {
             return list.Count == 0 ? 1 : list.Max(s => s.StudentID) + 1;
         }
+        public List<Student> GetAll()
+        {
+            return list;
+        }
 
     }
 }

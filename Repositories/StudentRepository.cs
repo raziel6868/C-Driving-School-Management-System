@@ -30,5 +30,10 @@ namespace Repositories
 
         public bool IsTelephoneUnique(string telephone)
             => !studentDAO.GetAll().Any(s => s.Telephone == telephone);
+
+        public Student GetStudentByEmail(string email)
+        {
+            return studentDAO.GetAll().FirstOrDefault(s => s.EmailAddress == email);
+        }
     }
 }
